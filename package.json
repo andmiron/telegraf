@@ -1,0 +1,29 @@
+{
+  "name": "task-3.5",
+  "version": "1.0.0",
+  "description": "subscription bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@git.foxminded.ua:foxstudent105275/task-3.5.git"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "nodejs",
+    "cron"
+  ],
+  "author": "Andrii Myronenko",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "cron": "^2.3.1",
+    "telegraf": "^4.12.2"
+  }
+}
