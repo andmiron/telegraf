@@ -7,11 +7,9 @@ export class SubscribeCommand extends CommandClass {
   }
 
   async execute(ctx: Context): Promise<void> {
-    const inlineKeyboard = Markup.inlineKeyboard([
-      Markup.button.callback('Subscribe 🔔', 'subscribe'),
-      Markup.button.callback('Unsubscribe 🔕', 'unsubscribe'),
-    ]);
-
-    await ctx.reply('Get daily weather updates:', inlineKeyboard);
+    await ctx.reply(
+      'Start subscription ⛅',
+      Markup.inlineKeyboard([Markup.button.callback('Choose time ⌛', 'startWeatherScene')])
+    );
   }
 }

@@ -1,10 +1,9 @@
-import {Context} from 'telegraf';
-
 export enum EnvironmentVariableKeys {
   NODE_ENV = 'NODE_ENV',
   TELEGRAM_BOT_TOKEN = 'TELEGRAM_BOT_TOKEN',
   PRETTY_LOGGING = 'PRETTY_LOGGING',
   WEATHER_API_KEY = 'WEATHER_API_KEY',
+  MONGO_DB_STRING = 'MONGO_DB_STRING',
 }
 
 export enum LoggerOptions {
