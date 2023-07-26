@@ -15,7 +15,7 @@ export class UnsubscribeCommand extends CommandClass {
       await this.dbInstance.deleteUser(userId);
       this.logger.logInfo(`User ${userId} deleted from db`);
 
-      await ctx.reply('Your subscription declined.');
+      await ctx.reply('Your subscription has been declined.');
     } else {
       await ctx.reply('First you need to subscribe.');
     }
