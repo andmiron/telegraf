@@ -30,6 +30,7 @@ class App {
 
     botHandler.createCommandsMenu();
     botHandler.handleCommands();
+    botHandler.startCronJob();
 
     botHandler.launchBot();
   }

@@ -5,6 +5,8 @@ import {DatabaseClass} from '../db/database.class.js';
 import {ConfigService} from './config.service.js';
 import {EnvironmentVariableKeys} from '../types/types.js';
 import {SubscribeScene} from '../scenes/subscribe.scene.js';
+import {CronJob} from 'cron';
+import {CronService} from './cron.service.js';
 
 export class TelegrafService {
   private readonly bot: Telegraf<Scenes.SceneContext>;
@@ -25,9 +27,8 @@ export class TelegrafService {
 
   registerMiddlewares(): void {
     this.bot.use(async (ctx, next) => {
-      this.logger.logInfo(
-        `${ctx.from ? ctx.from.username : 'Unknown user'}: sent ${ctx.updateType}`
-      );
+      this.logger.logInfo(`${ctx.message!.from.first_name} sent ${ctx.updateType}`);
+
       await next();
     });
 
@@ -45,6 +46,11 @@ export class TelegrafService {
     return new Scenes.Stage<Scenes.SceneContext>(scenes);
   }
 
+  startCronJob() {
+    const cron = new CronService(this.database);
+    cron.start();
+  }
+
   createCommandsMenu(): void {
     this.bot.telegram
       .setMyCommands(this.commands)
@@ -58,7 +64,7 @@ export class TelegrafService {
 
   launchBot(): void {
     this.bot.telegram.getMe().then(user => {
-      this.bot.launch();
+      this.bot.launch({allowedUpdates: ['message', 'callback_query']});
       this.logger.logInfo(`Bot ${user.username} started`);
     });
 

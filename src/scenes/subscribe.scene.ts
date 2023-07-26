@@ -66,10 +66,10 @@ export class SubscribeScene extends SceneCreator {
         await this.dbInstance.createOrUpdateUser(userId, time, latitude, longitude);
         this.logger.logInfo(`User ${ctx.session.userId} saved to db`);
 
-        await ctx.reply("Cool! You've been subscribed ✅");
+        await ctx.reply(`Cool! Your subscription is set at ${time} ✔️`);
 
         await ctx.scene.leave();
-        this.logger.logInfo(`User ${ctx.from.username} exited the scene`);
+        this.logger.logInfo(`User ${ctx.message.from.first_name} exited the scene`);
       } catch (err) {
         await ctx.reply(`An error occurred... Please try again with /subscribe command`);
         await ctx.scene.leave();
@@ -80,7 +80,7 @@ export class SubscribeScene extends SceneCreator {
       await ctx.scene.leave();
       await ctx.reply('Exited the process 🤚');
 
-      this.logger.logInfo(`User ${ctx.from.username} exited the scene`);
+      this.logger.logInfo(`User ${ctx.message.from.first_name} exited the scene`);
     });
   }
 

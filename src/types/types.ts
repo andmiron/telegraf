@@ -1,5 +1,6 @@
 export enum EnvironmentVariableKeys {
   NODE_ENV = 'NODE_ENV',
+  TZ = 'TZ',
   TELEGRAM_BOT_TOKEN = 'TELEGRAM_BOT_TOKEN',
   PRETTY_LOGGING = 'PRETTY_LOGGING',
   WEATHER_API_KEY = 'WEATHER_API_KEY',
