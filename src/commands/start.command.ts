@@ -1,5 +1,5 @@
 import {CommandClass} from './command.class.js';
-import {Context} from 'telegraf';
+import {Context, Markup} from 'telegraf';
 
 export class StartCommand extends CommandClass {
   constructor(command: string, description: string) {
@@ -7,6 +7,17 @@ export class StartCommand extends CommandClass {
   }
 
   async execute(ctx: Context): Promise<void> {
-    await ctx.reply('To subscribe on daily weather forecasts type /subscribe');
+    const commands = await ctx.telegram.getMyCommands();
+
+    const replyKeyboard = [];
+
+    for (const command of commands) {
+      replyKeyboard.push(Markup.button.text(`/${command.command}`));
+    }
+
+    await ctx.reply(
+      'I will help you be aware of the weather every day. To find available commands use bot menu or reply keyboard below:',
+      Markup.keyboard(replyKeyboard).resize()
+    );
   }
 }

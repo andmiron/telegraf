@@ -1,27 +1,24 @@
 import mongoose from 'mongoose';
-import {DatabaseInterface} from './database.interface.js';
 import User from './model.user.js';
 
-export class DatabaseClass implements DatabaseInterface {
-  private readonly connectionString: string;
-
-  constructor(connectionString: string) {
-    this.connectionString = connectionString;
+export class DatabaseClass {
+  async connectDb(connectionString: string) {
+    await mongoose.connect(connectionString);
   }
 
-  async connectDb() {
-    await mongoose.connect(this.connectionString);
+  async createOrUpdateUser(userId: number, time: string, latitude: number, longitude: number) {
+    return User.findOneAndUpdate(
+      {userId: userId},
+      {time: time, latitude: latitude, longitude: longitude},
+      {new: true, upsert: true}
+    );
   }
 
-  async createUser(userId: number, time: string) {
-    await User.create({userId: userId, time: time});
-  }
-
-  async updateUser(userId: number, time: string) {
-    await User.findOneAndUpdate({userId: userId}, {time: time}, {new: true});
+  async findUser(userId: number) {
+    return User.findOne({userId: userId});
   }
 
   async deleteUser(userId: number) {
-    await User.deleteOne({userId: userId});
+    return User.deleteOne({userId: userId});
   }
 }

@@ -4,7 +4,7 @@ import {CommandClass} from '../commands/command.class.js';
 import {DatabaseClass} from '../db/database.class.js';
 import {ConfigService} from './config.service.js';
 import {EnvironmentVariableKeys} from '../types/types.js';
-import {SceneCreator} from '../scenes/scene.creator.js';
+import {SubscribeScene} from '../scenes/subscribe.scene.js';
 
 export class TelegrafService {
   private readonly bot: Telegraf<Scenes.SceneContext>;
@@ -16,9 +16,7 @@ export class TelegrafService {
     this.bot = bot;
     this.logger = new LoggerService();
     this.commands = [];
-    this.database = new DatabaseClass(
-      new ConfigService().getToken(EnvironmentVariableKeys.MONGO_DB_STRING)
-    );
+    this.database = new DatabaseClass();
   }
 
   addCommand(command: CommandClass): void {
@@ -34,13 +32,17 @@ export class TelegrafService {
     });
 
     const stage = this.createStage();
+
     this.bot.use(session());
     this.bot.use(stage.middleware());
   }
 
   createStage() {
-    const scenes = new SceneCreator().createWeatherScene();
-    return new Scenes.Stage<Scenes.SceneContext>([scenes]);
+    const scenes = [];
+
+    scenes.push(new SubscribeScene('weatherScene').getScene());
+
+    return new Scenes.Stage<Scenes.SceneContext>(scenes);
   }
 
   createCommandsMenu(): void {
@@ -61,7 +63,7 @@ export class TelegrafService {
     });
 
     this.database
-      .connectDb()
+      .connectDb(new ConfigService().getToken(EnvironmentVariableKeys.MONGO_DB_STRING))
       .then(() => {
         this.logger.logInfo('Database connected');
       })
@@ -81,13 +83,6 @@ export class TelegrafService {
       } else {
         ctx.reply(response);
       }
-    });
-  }
-
-  handleCallbackQuery(): void {
-    this.bot.action('startWeatherScene', async ctx => {
-      await ctx.scene.enter('weatherScene');
-      await ctx.answerCbQuery();
     });
   }
 }
