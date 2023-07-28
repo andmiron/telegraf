@@ -6,19 +6,25 @@ export class DatabaseClass {
     await mongoose.connect(connectionString);
   }
 
-  async createOrUpdateUser(userId: number, time: string, latitude: number, longitude: number) {
+  async createOrUpdateUser(
+    chatId: number,
+    time: string,
+    latitude: number,
+    longitude: number,
+    offset: number
+  ) {
     return User.findOneAndUpdate(
-      {userId: userId},
-      {time: time, latitude: latitude, longitude: longitude},
+      {chatId: chatId},
+      {time: time, latitude: latitude, longitude: longitude, offset: offset},
       {new: true, upsert: true}
     );
   }
 
-  async findUser(userId: number) {
-    return User.findOne({userId: userId});
+  async findUser(chatId: number) {
+    return User.findOne({chatId: chatId});
   }
 
-  async deleteUser(userId: number) {
-    return User.deleteOne({userId: userId});
+  async deleteUser(chatId: number) {
+    return User.deleteOne({chatId: chatId});
   }
 }

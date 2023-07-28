@@ -5,6 +5,7 @@ export enum EnvironmentVariableKeys {
   PRETTY_LOGGING = 'PRETTY_LOGGING',
   WEATHER_API_KEY = 'WEATHER_API_KEY',
   MONGO_DB_STRING = 'MONGO_DB_STRING',
+  GOOGLE_MAPS_API_KEY = 'GOOGLE_MAPS_API_KEY',
 }
 
 export enum LoggerOptions {
@@ -21,19 +22,11 @@ export enum WeatherAPI {
 }
 
 export const WeatherGroup: Record<string, string> = {
-  THUNDERSTORM: '⚡️',
-  CLOUDS: '☁️',
-  CLEAR: '☀️',
-  ATMOSPHERE: '🌈',
-  SNOW: '❄️',
-  RAIN: '🌧',
-  DRIZZLE: '🥶',
-};
-
-export type WeatherObject = {
-  NAME: string;
-  ICON: string;
-  DESCRIPTION: string;
-  TEMP: string;
-  FEELS_LIKE: string;
+  Thunderstorm: '⚡️',
+  Clouds: '☁️',
+  Clear: '☀️',
+  Atmosphere: '🌈',
+  Snow: '❄️',
+  Rain: '🌧',
+  Drizzle: '🥶',
 };

@@ -1,13 +1,13 @@
 import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
-  userId: {
+  chatId: {
     type: Number,
     required: true,
     unique: true,
   },
   time: {
-    type: String,
+    type: Number,
     required: true,
   },
   latitude: {
@@ -15,6 +15,10 @@ const userSchema = new mongoose.Schema({
     required: true,
   },
   longitude: {
+    type: Number,
+    required: true,
+  },
+  offset: {
     type: Number,
     required: true,
   },

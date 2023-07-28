@@ -1,23 +1,44 @@
-import {CommandClass} from './command.class.js';
-import {Context} from 'telegraf';
+import {Scenes, Telegraf} from 'telegraf';
+import {DatabaseClass} from '../db/database.class.js';
+import {LoggerService} from '../services/logger.service.js';
+import {BotCommandInterface} from './bot.command.interface.js';
 
-export class UnsubscribeCommand extends CommandClass {
-  constructor(command: string, description: string) {
-    super(command, description);
+export class UnsubscribeCommand implements BotCommandInterface {
+  command: string;
+  description: string;
+
+  private bot: Telegraf<Scenes.SceneContext>;
+  private database: DatabaseClass;
+  private logger: LoggerService;
+
+  constructor(
+    command: string,
+    description: string,
+    bot: Telegraf<Scenes.SceneContext>,
+    database: DatabaseClass,
+    logger: LoggerService
+  ) {
+    this.command = command;
+    this.description = description;
+    this.bot = bot;
+    this.database = database;
+    this.logger = logger;
   }
 
-  async execute(ctx: Context): Promise<void> {
-    const userId = ctx.from!.id;
+  execute() {
+    this.bot.command(this.command, async ctx => {
+      const chatId = ctx.chat.id;
 
-    const userToDelete = await this.dbInstance.findUser(userId);
+      const userToDelete = await this.database.findUser(chatId);
 
-    if (userToDelete) {
-      await this.dbInstance.deleteUser(userId);
-      this.logger.logInfo(`User ${userId} deleted from db`);
+      if (userToDelete) {
+        await this.database.deleteUser(chatId);
+        this.logger.logInfo(`User deleted from db`);
 
-      await ctx.reply('Your subscription has been declined.');
-    } else {
-      await ctx.reply('First you need to subscribe.');
-    }
+        await ctx.reply('Your subscription has been declined.');
+      } else {
+        await ctx.reply('First you need to subscribe.');
+      }
+    });
   }
 }
