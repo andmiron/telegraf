@@ -19,6 +19,7 @@ export class WeatherService {
       const response = await axios.get(urlString);
 
       const weatherData = response.data;
+
       const {name: cityName} = weatherData;
       const {description: weatherDescription, main: weatherGroup} = weatherData.weather[0];
       const minTemp = Math.ceil(weatherData.main.temp_min - 273);
@@ -27,10 +28,10 @@ export class WeatherService {
       const humidity = weatherData.main.humidity;
       const windSpeed = weatherData.wind.speed;
       const icon = WeatherGroup[weatherGroup];
-      const sunset = moment.unix(weatherData.sys.sunset).format('HH:mm');
-      const sunrise = moment.unix(weatherData.sys.sunrise).format('HH:mm');
+      const sunset = moment.unix(weatherData.sys.sunset + weatherData.timezone).format('HH:mm');
+      const sunrise = moment.unix(weatherData.sys.sunrise + weatherData.timezone).format('HH:mm');
 
-      return `Today in ${cityName} ${icon} ${weatherDescription}\nSunrise 🌄 at ${sunrise}\nSunset 🌇 at ${sunset}\nMaximum temperature 🔼 ${maxTemp}℃\nMinimal temperature 🔽 ${minTemp}℃\nIt feels like 🌡️ ${feels_like}℃\nHumidity level 💧 ${humidity}%\nWind speed 🍃 ${windSpeed} m/s`;
+      return `Today in ${cityName}: ${icon} ${weatherDescription}\nSunrise: 🌄 at ${sunrise}\nSunset: 🌇 at ${sunset}\nMaximum temperature: 🔼 ${maxTemp}℃\nMinimal temperature: 🔽 ${minTemp}℃\nIt feels like: 🌡️ ${feels_like}℃\nHumidity level: 💧 ${humidity}%\nWind speed: 🍃 ${windSpeed} m/s`;
     } catch (err) {
       new LoggerService().logError(err as Error);
     }

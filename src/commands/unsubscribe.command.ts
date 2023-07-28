@@ -2,6 +2,7 @@ import {Scenes, Telegraf} from 'telegraf';
 import {DatabaseClass} from '../db/database.class.js';
 import {LoggerService} from '../services/logger.service.js';
 import {BotCommandInterface} from './bot.command.interface.js';
+import {BotResponse} from '../types/types.js';
 
 export class UnsubscribeCommand implements BotCommandInterface {
   command: string;
@@ -35,9 +36,9 @@ export class UnsubscribeCommand implements BotCommandInterface {
         await this.database.deleteUser(chatId);
         this.logger.logInfo(`User deleted from db`);
 
-        await ctx.reply('Your subscription has been declined.');
+        await ctx.reply(BotResponse.UNSUBSCRIBE);
       } else {
-        await ctx.reply('First you need to subscribe.');
+        await ctx.reply(BotResponse.NO_SUBSCRIPTION);
       }
     });
   }

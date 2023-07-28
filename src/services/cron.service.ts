@@ -4,7 +4,7 @@ import User from '../db/model.user.js';
 import {WeatherService} from './weather.service.js';
 import {Scenes, Telegraf} from 'telegraf';
 import {ConfigService} from './config.service.js';
-import {EnvironmentVariableKeys} from '../types/types.js';
+import {BotResponse, EnvironmentVariableKeys} from '../types/types.js';
 import {LoggerService} from './logger.service.js';
 
 export class CronService {
@@ -41,7 +41,7 @@ export class CronService {
         if (currentMinute + user.offset === userMinute) {
           const weatherData =
             (await this.weatherService.getForecast(latitude, longitude)) ??
-            'Weather data unavailable.';
+            BotResponse.WEATHER_FETCH_ERROR;
 
           await this.bot.telegram.sendMessage(chatId, weatherData);
           this.loggerService.logInfo(`Chat ${chatId} received weather update.`);

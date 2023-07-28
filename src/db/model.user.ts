@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  timeInput: String,
   time: {
     type: Number,
     required: true,

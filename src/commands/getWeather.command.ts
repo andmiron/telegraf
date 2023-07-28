@@ -1,6 +1,7 @@
 import {BotCommandInterface} from './bot.command.interface.js';
 import {Markup, Scenes, Telegraf} from 'telegraf';
 import {WeatherService} from '../services/weather.service.js';
+import {BotResponse} from '../types/types.js';
 
 export class GetWeatherCommand implements BotCommandInterface {
   command: string;
@@ -24,8 +25,8 @@ export class GetWeatherCommand implements BotCommandInterface {
   execute() {
     this.bot.command(this.command, async ctx => {
       await ctx.reply(
-        'Share your location with button below 📲',
-        Markup.keyboard([Markup.button.locationRequest('Send my location 📍')])
+        BotResponse.SHARE_LOCATION,
+        Markup.keyboard([Markup.button.locationRequest(BotResponse.SHARE_BUTTON)])
           .resize()
           .oneTime()
       );
@@ -36,7 +37,7 @@ export class GetWeatherCommand implements BotCommandInterface {
 
       const weatherData = await this.weatherService.getForecast(latitude, longitude);
 
-      await ctx.reply(weatherData ?? 'Weather data unavailable. Try again later.', {
+      await ctx.reply(weatherData ?? BotResponse.WEATHER_FETCH_ERROR, {
         reply_markup: {
           remove_keyboard: true,
         },

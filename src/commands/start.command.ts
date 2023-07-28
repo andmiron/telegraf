@@ -1,5 +1,6 @@
 import {Markup, Scenes, Telegraf} from 'telegraf';
 import {BotCommandInterface} from './bot.command.interface.js';
+import {BotResponse} from '../types/types.js';
 
 export class StartCommand implements BotCommandInterface {
   command: string;
@@ -22,10 +23,7 @@ export class StartCommand implements BotCommandInterface {
         replyKeyboard.push(Markup.button.text(`/${command.command}`));
       }
 
-      await ctx.reply(
-        'I will help you be aware of the weather every day. To find available commands use bot menu or reply keyboard below:',
-        Markup.keyboard(replyKeyboard).resize()
-      );
+      await ctx.reply(BotResponse.START, Markup.keyboard(replyKeyboard).resize());
     });
   }
 }

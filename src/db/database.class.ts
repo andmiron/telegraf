@@ -8,6 +8,7 @@ export class DatabaseClass {
 
   async createOrUpdateUser(
     chatId: number,
+    timeInput: string,
     time: string,
     latitude: number,
     longitude: number,
@@ -15,7 +16,7 @@ export class DatabaseClass {
   ) {
     return User.findOneAndUpdate(
       {chatId: chatId},
-      {time: time, latitude: latitude, longitude: longitude, offset: offset},
+      {time: time, latitude: latitude, longitude: longitude, offset: offset, timeInput: timeInput},
       {new: true, upsert: true}
     );
   }

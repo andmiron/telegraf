@@ -1,6 +1,7 @@
 import {BotCommandInterface} from './bot.command.interface.js';
 import {Scenes, Telegraf} from 'telegraf';
 import {DatabaseClass} from '../db/database.class.js';
+import {BotResponse} from '../types/types.js';
 
 export class CheckCommand implements BotCommandInterface {
   command: string;
@@ -27,9 +28,9 @@ export class CheckCommand implements BotCommandInterface {
       const user = await this.database.findUser(userId);
 
       if (user) {
-        await ctx.reply(`Next update coming at ${Math.trunc(user.time / 60)}:${user.time % 60}`);
+        await ctx.reply(BotResponse.CHECK + user.timeInput);
       } else {
-        await ctx.reply('You have not subscribed yet.');
+        await ctx.reply(BotResponse.NO_SUBSCRIPTION);
       }
     });
   }

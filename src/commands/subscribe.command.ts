@@ -1,6 +1,7 @@
 import {Scenes, Telegraf} from 'telegraf';
 import {DatabaseClass} from '../db/database.class.js';
 import {BotCommandInterface} from './bot.command.interface.js';
+import {BotResponse} from '../types/types.js';
 
 export class SubscribeCommand implements BotCommandInterface {
   command: string;
@@ -28,7 +29,7 @@ export class SubscribeCommand implements BotCommandInterface {
       if (!user) {
         await ctx.scene.enter('weatherScene');
       } else {
-        await ctx.reply(`You already have subscription.\nTo update data use /update`);
+        await ctx.reply(BotResponse.ALREADY_SUBSCRIBE);
       }
     });
   }
