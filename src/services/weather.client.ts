@@ -1,10 +1,10 @@
 import {ConfigService} from './config.service.js';
-import {EnvironmentVariableKeys, WeatherAPI, WeatherGroup} from '../types/types.js';
+import {EnvironmentVariableKeys, WeatherAPI, WeatherDto, WeatherGroup} from '../types/types.js';
 import axios from 'axios';
 import {LoggerService} from './logger.service.js';
 import moment from 'moment/moment.js';
 
-export class WeatherService {
+export class WeatherClient {
   private readonly apiKey: string;
   constructor() {
     this.apiKey = new ConfigService().getToken(EnvironmentVariableKeys.WEATHER_API_KEY);
@@ -31,7 +31,21 @@ export class WeatherService {
       const sunset = moment.unix(weatherData.sys.sunset + weatherData.timezone).format('HH:mm');
       const sunrise = moment.unix(weatherData.sys.sunrise + weatherData.timezone).format('HH:mm');
 
-      return `Today in ${cityName}: ${icon} ${weatherDescription}\nSunrise: 🌄 at ${sunrise}\nSunset: 🌇 at ${sunset}\nMaximum temperature: 🔼 ${maxTemp}℃\nMinimal temperature: 🔽 ${minTemp}℃\nIt feels like: 🌡️ ${feels_like}℃\nHumidity level: 💧 ${humidity}%\nWind speed: 🍃 ${windSpeed} m/s`;
+      const weatherObject: WeatherDto = {
+        cityName: cityName,
+        weatherDescription: weatherDescription,
+        weatherGroup: weatherGroup,
+        minTemp: minTemp,
+        maxTemp: maxTemp,
+        feels_like: feels_like,
+        humidity: humidity,
+        windSpeed: windSpeed,
+        icon: icon,
+        sunset: sunset,
+        sunrise: sunrise,
+      };
+
+      return weatherObject;
     } catch (err) {
       new LoggerService().logError(err as Error);
     }

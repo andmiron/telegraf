@@ -1,7 +1,7 @@
 import {Scenes, Telegraf} from 'telegraf';
 import {DatabaseClass} from '../db/database.class.js';
 import {BotCommandInterface} from './bot.command.interface.js';
-import {BotResponse} from '../types/types.js';
+import {BotResponse, ScenesId} from '../types/types.js';
 
 export class SubscribeCommand implements BotCommandInterface {
   command: string;
@@ -27,7 +27,7 @@ export class SubscribeCommand implements BotCommandInterface {
       const user = await this.database.findUser(ctx.from.id);
 
       if (!user) {
-        await ctx.scene.enter('weatherScene');
+        await ctx.scene.enter(ScenesId.WEATHER_SCENE);
       } else {
         await ctx.reply(BotResponse.ALREADY_SUBSCRIBE);
       }

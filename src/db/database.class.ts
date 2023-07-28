@@ -9,7 +9,7 @@ export class DatabaseClass {
   async createOrUpdateUser(
     chatId: number,
     timeInput: string,
-    time: string,
+    time: number,
     latitude: number,
     longitude: number,
     offset: number

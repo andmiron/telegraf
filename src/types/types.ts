@@ -1,6 +1,7 @@
 export enum EnvironmentVariableKeys {
   NODE_ENV = 'NODE_ENV',
   TZ = 'TZ',
+  CRON_TIME = 'CRON_TIME',
   TELEGRAM_BOT_TOKEN = 'TELEGRAM_BOT_TOKEN',
   PRETTY_LOGGING = 'PRETTY_LOGGING',
   WEATHER_API_KEY = 'WEATHER_API_KEY',
@@ -31,9 +32,31 @@ export const WeatherGroup: Record<string, string> = {
   Drizzle: '🥶',
 };
 
+export interface WeatherDto {
+  cityName: string;
+  weatherDescription: string;
+  weatherGroup: string;
+  minTemp: number;
+  maxTemp: number;
+  feels_like: number;
+  humidity: number;
+  windSpeed: number;
+  icon: string;
+  sunset: string;
+  sunrise: string;
+}
+
 export enum ScenesId {
   WEATHER_SCENE = 'weatherScene',
 }
+
+export enum Models {
+  USERS = 'Users',
+}
+
+export const RegExpTriggers: Record<string, RegExp> = {
+  TIME_INPUT: /^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/,
+};
 
 export enum BotResponse {
   START = 'I will help you be aware of the weather every day.\nTo find available commands use bot menu or keyboard below 📲',
@@ -48,4 +71,23 @@ export enum BotResponse {
   SUBMIT_SUBSCRIPTION = `Good. Submit to subscribe ⬇️\n(or /cancel to exit)`,
   SUBSCRIBED = `Cool! Your subscription is set at ✔️`,
   SCENE_EXIT = 'Exited the process 🤚',
+  SUBSCRIBE_BUTTON = 'Subscribe 🔔',
+}
+
+export enum Commands {
+  START = 'start',
+  WEATHER = 'weather',
+  CHECK = 'check',
+  SUBSCRIBE = 'subscribe',
+  UNSUBSCRIBE = 'unsubscribe',
+  UPDATE = 'update',
+}
+
+export enum CommandsDescription {
+  START = 'Start the bot',
+  WEATHER = 'Get current weather',
+  CHECK = 'Check subscription status',
+  SUBSCRIBE = 'Get daily weather updates',
+  UNSUBSCRIBE = 'Stop getting weather updates',
+  UPDATE = 'Update subscription data',
 }

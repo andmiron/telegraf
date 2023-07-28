@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import {Models} from '../types/types.js';
 
 const userSchema = new mongoose.Schema({
   chatId: {
@@ -25,6 +26,6 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-const User = mongoose.model('Users', userSchema);
+const User = mongoose.model(Models.USERS, userSchema);
 
 export default User;

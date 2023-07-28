@@ -1,25 +1,26 @@
 import {BotCommandInterface} from './bot.command.interface.js';
 import {Markup, Scenes, Telegraf} from 'telegraf';
-import {WeatherService} from '../services/weather.service.js';
+import {WeatherClient} from '../services/weather.client.js';
 import {BotResponse} from '../types/types.js';
+import {StringGenerator} from '../utils/string.generator.js';
 
 export class GetWeatherCommand implements BotCommandInterface {
   command: string;
   description: string;
 
   private bot: Telegraf<Scenes.SceneContext>;
-  private weatherService: WeatherService;
+  private weatherClient: WeatherClient;
 
   constructor(
     command: string,
     description: string,
     bot: Telegraf<Scenes.SceneContext>,
-    weatherService: WeatherService
+    weatherClient: WeatherClient
   ) {
     this.command = command;
     this.description = description;
     this.bot = bot;
-    this.weatherService = weatherService;
+    this.weatherClient = weatherClient;
   }
 
   execute() {
@@ -34,14 +35,18 @@ export class GetWeatherCommand implements BotCommandInterface {
 
     this.bot.on('location', async ctx => {
       const {latitude, longitude} = ctx.message.location;
+      const weatherData = await this.weatherClient.getForecast(latitude, longitude);
 
-      const weatherData = await this.weatherService.getForecast(latitude, longitude);
-
-      await ctx.reply(weatherData ?? BotResponse.WEATHER_FETCH_ERROR, {
-        reply_markup: {
-          remove_keyboard: true,
-        },
-      });
+      if (weatherData) {
+        const weatherMessage = new StringGenerator().generateWeatherString(weatherData);
+        await ctx.reply(weatherMessage, {
+          reply_markup: {
+            remove_keyboard: true,
+          },
+        });
+      } else {
+        await ctx.reply(BotResponse.WEATHER_FETCH_ERROR);
+      }
     });
   }
 }

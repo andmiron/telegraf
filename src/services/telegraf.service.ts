@@ -2,7 +2,7 @@ import {Scenes, session, Telegraf} from 'telegraf';
 import {LoggerService} from './logger.service.js';
 import {DatabaseClass} from '../db/database.class.js';
 import {ConfigService} from './config.service.js';
-import {EnvironmentVariableKeys} from '../types/types.js';
+import {Commands, CommandsDescription, EnvironmentVariableKeys, ScenesId} from '../types/types.js';
 import {CronService} from './cron.service.js';
 import {BaseScene} from 'telegraf/scenes';
 import {BotCommandInterface} from '../commands/bot.command.interface.js';
@@ -13,14 +13,14 @@ import {UnsubscribeCommand} from '../commands/unsubscribe.command.js';
 import {UpdateCommand} from '../commands/update.command.js';
 import {CheckCommand} from '../commands/check.command.js';
 import {SubscribeScene} from '../scenes/subscribe.scene.js';
-import {WeatherService} from './weather.service.js';
+import {WeatherClient} from './weather.client.js';
 
 export class TelegrafService {
   private bot: Telegraf<Scenes.SceneContext>;
   private configService: ConfigService;
   private loggerService: LoggerService;
   private databaseService: DatabaseClass;
-  private weatherService: WeatherService;
+  private weatherClient: WeatherClient;
   private cron: CronService;
   private commands: BotCommandInterface[];
   private scenes: BaseScene<any>[];
@@ -29,14 +29,14 @@ export class TelegrafService {
     this.configService = new ConfigService();
     this.loggerService = new LoggerService();
     this.databaseService = new DatabaseClass();
-    this.weatherService = new WeatherService();
+    this.weatherClient = new WeatherClient();
     this.bot = new Telegraf<Scenes.SceneContext>(
       this.configService.getToken(EnvironmentVariableKeys.TELEGRAM_BOT_TOKEN)
     );
     this.cron = new CronService(
       this.configService,
       this.databaseService,
-      this.weatherService,
+      this.weatherClient,
       this.loggerService,
       this.bot
     );
@@ -45,33 +45,47 @@ export class TelegrafService {
   }
 
   registerCommands() {
-    this.commands.push(new StartCommand('start', 'Start the bot', this.bot));
+    this.commands.push(new StartCommand(Commands.START, CommandsDescription.START, this.bot));
     this.commands.push(
-      new GetWeatherCommand('weather', 'Get current weather', this.bot, this.weatherService)
+      new GetWeatherCommand(
+        Commands.WEATHER,
+        CommandsDescription.WEATHER,
+        this.bot,
+        this.weatherClient
+      )
     );
     this.commands.push(
-      new SubscribeCommand('subscribe', 'Get daily weather updates', this.bot, this.databaseService)
+      new SubscribeCommand(
+        Commands.SUBSCRIBE,
+        CommandsDescription.SUBSCRIBE,
+        this.bot,
+        this.databaseService
+      )
     );
     this.commands.push(
       new UnsubscribeCommand(
-        'unsubscribe',
-        'Stop getting weather updates',
+        Commands.UNSUBSCRIBE,
+        CommandsDescription.UNSUBSCRIBE,
         this.bot,
         this.databaseService,
         this.loggerService
       )
     );
     this.commands.push(
-      new UpdateCommand('update', 'Update subscription data', this.bot, this.databaseService)
+      new UpdateCommand(Commands.UPDATE, CommandsDescription.UPDATE, this.bot, this.databaseService)
     );
     this.commands.push(
-      new CheckCommand('check', 'Check subscription status', this.bot, this.databaseService)
+      new CheckCommand(Commands.CHECK, CommandsDescription.CHECK, this.bot, this.databaseService)
     );
   }
 
   registerScenes() {
     this.scenes.push(
-      new SubscribeScene('weatherScene', this.databaseService, this.loggerService).getScene()
+      new SubscribeScene(
+        ScenesId.WEATHER_SCENE,
+        this.databaseService,
+        this.loggerService
+      ).getScene()
     );
   }
 

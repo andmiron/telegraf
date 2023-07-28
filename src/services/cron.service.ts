@@ -1,29 +1,30 @@
 import {CronJob} from 'cron';
 import {DatabaseClass} from '../db/database.class.js';
 import User from '../db/model.user.js';
-import {WeatherService} from './weather.service.js';
+import {WeatherClient} from './weather.client.js';
 import {Scenes, Telegraf} from 'telegraf';
 import {ConfigService} from './config.service.js';
 import {BotResponse, EnvironmentVariableKeys} from '../types/types.js';
 import {LoggerService} from './logger.service.js';
+import {StringGenerator} from '../utils/string.generator.js';
 
 export class CronService {
   private configService: ConfigService;
   private databaseService: DatabaseClass;
-  private weatherService: WeatherService;
+  private weatherClient: WeatherClient;
   private loggerService: LoggerService;
   private bot: Telegraf<Scenes.SceneContext>;
 
   constructor(
     configService: ConfigService,
     databaseService: DatabaseClass,
-    weatherService: WeatherService,
+    weatherClient: WeatherClient,
     loggerService: LoggerService,
     bot: Telegraf<Scenes.SceneContext>
   ) {
     this.configService = configService;
     this.databaseService = databaseService;
-    this.weatherService = weatherService;
+    this.weatherClient = weatherClient;
     this.loggerService = loggerService;
     this.bot = bot;
   }
@@ -37,14 +38,16 @@ export class CronService {
         const userMinute = user.time;
         const {latitude, longitude} = user;
         const {chatId} = user;
+        const weatherData = await this.weatherClient.getForecast(latitude, longitude);
 
-        if (currentMinute + user.offset === userMinute) {
-          const weatherData =
-            (await this.weatherService.getForecast(latitude, longitude)) ??
-            BotResponse.WEATHER_FETCH_ERROR;
-
-          await this.bot.telegram.sendMessage(chatId, weatherData);
+        if (currentMinute + user.offset === userMinute && weatherData) {
+          const weatherString = new StringGenerator().generateWeatherString(weatherData);
+          await this.bot.telegram.sendMessage(chatId, weatherString);
           this.loggerService.logInfo(`Chat ${chatId} received weather update.`);
+        }
+
+        if (!weatherData) {
+          await this.bot.telegram.sendMessage(chatId, BotResponse.WEATHER_FETCH_ERROR);
         }
       }
     } catch (err) {
@@ -54,7 +57,7 @@ export class CronService {
 
   start() {
     new CronJob(
-      '* * * * *',
+      this.configService.getToken(EnvironmentVariableKeys.CRON_TIME),
       this.onTick,
       null,
       true,
