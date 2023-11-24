@@ -69,7 +69,7 @@ export enum BotResponse {
   UNSUBSCRIBE = 'Your subscription has been declined 🔕',
   TIME_INPUT = 'Enter desired time ⌛ in HH:MM format\nor use keyboard below ⬇️\n(or /cancel to exit)',
   SUBMIT_SUBSCRIPTION = `Good. Submit to subscribe ⬇️\n(or /cancel to exit)`,
-  SUBSCRIBED = `Cool! Your subscription is set at ✔️`,
+  SUBSCRIBED = `Cool! Your subscription is set at: ✔️`,
   SCENE_EXIT = 'Exited the process 🤚',
   SUBSCRIBE_BUTTON = 'Subscribe 🔔',
 }

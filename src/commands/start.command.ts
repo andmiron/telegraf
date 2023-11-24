@@ -1,14 +1,15 @@
-import {Markup, Scenes, Telegraf} from 'telegraf';
-import {BotCommandInterface} from './bot.command.interface.js';
+import {Markup, Telegraf} from 'telegraf';
+import {BotCommandInterface} from '../interfaces/bot.command.interface.js';
 import {BotResponse} from '../types/types.js';
+import {CustomContext} from '../interfaces/custom.context.js';
 
 export class StartCommand implements BotCommandInterface {
   command: string;
   description: string;
 
-  private bot: Telegraf<Scenes.SceneContext>;
+  private bot: Telegraf<CustomContext>;
 
-  constructor(command: string, description: string, bot: Telegraf<Scenes.SceneContext>) {
+  constructor(command: string, description: string, bot: Telegraf<CustomContext>) {
     this.command = command;
     this.description = description;
     this.bot = bot;

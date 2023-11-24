@@ -1,26 +1,26 @@
 import {CronJob} from 'cron';
 import {DatabaseClass} from '../db/database.class.js';
-import User from '../db/model.user.js';
 import {WeatherClient} from './weather.client.js';
-import {Scenes, Telegraf} from 'telegraf';
+import {Telegraf} from 'telegraf';
 import {ConfigService} from './config.service.js';
 import {BotResponse, EnvironmentVariableKeys} from '../types/types.js';
 import {LoggerService} from './logger.service.js';
 import {StringGenerator} from '../utils/string.generator.js';
+import {CustomContext} from '../interfaces/custom.context.js';
 
 export class CronService {
   private configService: ConfigService;
   private databaseService: DatabaseClass;
   private weatherClient: WeatherClient;
   private loggerService: LoggerService;
-  private bot: Telegraf<Scenes.SceneContext>;
+  private bot: Telegraf<CustomContext>;
 
   constructor(
     configService: ConfigService,
     databaseService: DatabaseClass,
     weatherClient: WeatherClient,
     loggerService: LoggerService,
-    bot: Telegraf<Scenes.SceneContext>
+    bot: Telegraf<CustomContext>
   ) {
     this.configService = configService;
     this.databaseService = databaseService;
@@ -34,7 +34,8 @@ export class CronService {
     const currentMinute = currentDate.getHours() * 60 + currentDate.getMinutes();
 
     try {
-      for await (const user of User.find()) {
+      const users = await this.databaseService.findAllUsers();
+      for (const user of users) {
         const userMinute = user.time;
         const {latitude, longitude} = user;
         const {chatId} = user;

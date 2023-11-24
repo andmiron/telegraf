@@ -1,19 +1,20 @@
-import {BotCommandInterface} from './bot.command.interface.js';
-import {Scenes, Telegraf} from 'telegraf';
+import {BotCommandInterface} from '../interfaces/bot.command.interface.js';
+import {Telegraf} from 'telegraf';
 import {DatabaseClass} from '../db/database.class.js';
 import {BotResponse} from '../types/types.js';
+import {CustomContext} from '../interfaces/custom.context.js';
 
 export class CheckCommand implements BotCommandInterface {
   command: string;
   description: string;
 
-  private bot: Telegraf<Scenes.SceneContext>;
+  private bot: Telegraf<CustomContext>;
   private database: DatabaseClass;
 
   constructor(
     command: string,
     description: string,
-    bot: Telegraf<Scenes.SceneContext>,
+    bot: Telegraf<CustomContext>,
     database: DatabaseClass
   ) {
     this.command = command;

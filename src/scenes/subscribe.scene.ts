@@ -1,20 +1,22 @@
 import {SceneCreator} from './scene.creator.js';
-import {BaseScene} from 'telegraf/scenes';
 import {KeyboardButton} from 'typegram';
 import {Markup} from 'telegraf';
 import {TimeConverterClass} from '../utils/timeConverter.class.js';
 import {DatabaseClass} from '../db/database.class.js';
 import {LoggerService} from '../services/logger.service.js';
 import {BotResponse, RegExpTriggers} from '../types/types.js';
+import {BaseScene} from 'telegraf/scenes';
+import {CustomContext} from '../interfaces/custom.context.js';
+import {UserDto} from '../dto/user.dto.js';
 
 export class SubscribeScene extends SceneCreator {
-  private scene: BaseScene<any>;
+  private scene: BaseScene<CustomContext>;
   private database: DatabaseClass;
   private logger: LoggerService;
 
   constructor(sceneId: string, database: DatabaseClass, logger: LoggerService) {
     super();
-    this.scene = new BaseScene<any>(sceneId);
+    this.scene = new BaseScene<CustomContext>(sceneId);
     this.database = database;
     this.logger = logger;
   }
@@ -38,8 +40,10 @@ export class SubscribeScene extends SceneCreator {
     });
 
     this.scene.hears(RegExpTriggers['TIME_INPUT'], async ctx => {
-      ctx.session.time = new TimeConverterClass().convertHoursStringToMinutes(ctx.message.text);
-      ctx.session.timeInput = ctx.message.text;
+      ctx.scene.session.time = new TimeConverterClass().convertHoursStringToMinutes(
+        ctx.message.text
+      );
+      ctx.scene.session.timeInput = ctx.message.text;
 
       await ctx.reply(
         BotResponse.SHARE_LOCATION,
@@ -54,10 +58,10 @@ export class SubscribeScene extends SceneCreator {
 
     this.scene.on('location', async ctx => {
       const {latitude, longitude} = ctx.message.location;
-      ctx.session.latitude = latitude;
-      ctx.session.longitude = longitude;
+      ctx.scene.session.latitude = latitude;
+      ctx.scene.session.longitude = longitude;
 
-      ctx.session.offset = await new TimeConverterClass().getUtcOffsetMinutesFromCoordinates(
+      ctx.scene.session.offset = await new TimeConverterClass().getUtcOffsetMinutesFromCoordinates(
         latitude,
         longitude
       );
@@ -75,20 +79,21 @@ export class SubscribeScene extends SceneCreator {
 
     this.scene.hears(BotResponse.SUBSCRIBE_BUTTON, async ctx => {
       try {
-        ctx.session.chatId = ctx.chat.id;
-        const {chatId, time, latitude, longitude, offset, timeInput} = ctx.session;
+        ctx.scene.session.chatId = ctx.chat.id;
 
-        await this.database.createOrUpdateUser(
-          chatId,
-          timeInput,
-          time,
-          latitude,
-          longitude,
-          offset
-        );
+        const userData: UserDto = {
+          time: ctx.scene.session.time,
+          timeInput: ctx.scene.session.timeInput,
+          latitude: ctx.scene.session.latitude,
+          longitude: ctx.scene.session.longitude,
+          offset: ctx.scene.session.offset,
+          chatId: ctx.scene.session.chatId,
+        };
+
+        await this.database.createOrUpdateUser(userData);
         this.logger.logInfo(`User ${ctx.message.from.first_name} saved to db`);
 
-        await ctx.reply(BotResponse.SUBSCRIBED + ctx.session.timeInput);
+        await ctx.reply(BotResponse.SUBSCRIBED + ctx.scene.session.timeInput);
 
         await ctx.scene.leave();
         this.logger.logInfo(`User ${ctx.message.from.first_name} exited the scene`);

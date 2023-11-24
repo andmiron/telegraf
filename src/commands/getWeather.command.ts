@@ -1,20 +1,21 @@
-import {BotCommandInterface} from './bot.command.interface.js';
-import {Markup, Scenes, Telegraf} from 'telegraf';
+import {BotCommandInterface} from '../interfaces/bot.command.interface.js';
+import {Markup, Telegraf} from 'telegraf';
 import {WeatherClient} from '../services/weather.client.js';
 import {BotResponse} from '../types/types.js';
 import {StringGenerator} from '../utils/string.generator.js';
+import {CustomContext} from '../interfaces/custom.context.js';
 
 export class GetWeatherCommand implements BotCommandInterface {
   command: string;
   description: string;
 
-  private bot: Telegraf<Scenes.SceneContext>;
+  private bot: Telegraf<CustomContext>;
   private weatherClient: WeatherClient;
 
   constructor(
     command: string,
     description: string,
-    bot: Telegraf<Scenes.SceneContext>,
+    bot: Telegraf<CustomContext>,
     weatherClient: WeatherClient
   ) {
     this.command = command;

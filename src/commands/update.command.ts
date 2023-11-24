@@ -1,19 +1,20 @@
-import {Scenes, Telegraf} from 'telegraf';
+import {Telegraf} from 'telegraf';
 import {DatabaseClass} from '../db/database.class.js';
-import {BotCommandInterface} from './bot.command.interface.js';
+import {BotCommandInterface} from '../interfaces/bot.command.interface.js';
 import {BotResponse, ScenesId} from '../types/types.js';
+import {CustomContext} from '../interfaces/custom.context.js';
 
 export class UpdateCommand implements BotCommandInterface {
   command: string;
   description: string;
 
-  private bot: Telegraf<Scenes.SceneContext>;
+  private bot: Telegraf<CustomContext>;
   private database: DatabaseClass;
 
   constructor(
     command: string,
     description: string,
-    bot: Telegraf<Scenes.SceneContext>,
+    bot: Telegraf<CustomContext>,
     database: DatabaseClass
   ) {
     this.command = command;

@@ -4,8 +4,8 @@ import {DatabaseClass} from '../db/database.class.js';
 import {ConfigService} from './config.service.js';
 import {Commands, CommandsDescription, EnvironmentVariableKeys, ScenesId} from '../types/types.js';
 import {CronService} from './cron.service.js';
-import {BaseScene} from 'telegraf/scenes';
-import {BotCommandInterface} from '../commands/bot.command.interface.js';
+import {Stage} from 'telegraf/scenes';
+import {BotCommandInterface} from '../interfaces/bot.command.interface.js';
 import {StartCommand} from '../commands/start.command.js';
 import {GetWeatherCommand} from '../commands/getWeather.command.js';
 import {SubscribeCommand} from '../commands/subscribe.command.js';
@@ -14,23 +14,24 @@ import {UpdateCommand} from '../commands/update.command.js';
 import {CheckCommand} from '../commands/check.command.js';
 import {SubscribeScene} from '../scenes/subscribe.scene.js';
 import {WeatherClient} from './weather.client.js';
+import {CustomContext} from '../interfaces/custom.context.js';
 
 export class TelegrafService {
-  private bot: Telegraf<Scenes.SceneContext>;
-  private configService: ConfigService;
-  private loggerService: LoggerService;
-  private databaseService: DatabaseClass;
-  private weatherClient: WeatherClient;
+  private readonly bot: Telegraf<CustomContext>;
+  private readonly configService: ConfigService;
+  private readonly loggerService: LoggerService;
+  private readonly databaseService: DatabaseClass;
+  private readonly weatherClient: WeatherClient;
   private cron: CronService;
   private commands: BotCommandInterface[];
-  private scenes: BaseScene<any>[];
+  private scenes: Scenes.BaseScene<CustomContext>[];
 
   constructor() {
     this.configService = new ConfigService();
     this.loggerService = new LoggerService();
     this.databaseService = new DatabaseClass();
     this.weatherClient = new WeatherClient();
-    this.bot = new Telegraf<Scenes.SceneContext>(
+    this.bot = new Telegraf<CustomContext>(
       this.configService.getToken(EnvironmentVariableKeys.TELEGRAM_BOT_TOKEN)
     );
     this.cron = new CronService(
@@ -107,7 +108,7 @@ export class TelegrafService {
   }
 
   createStage() {
-    const stage = new Scenes.Stage<Scenes.SceneContext>(this.scenes);
+    const stage = new Stage<CustomContext>(this.scenes);
     this.bot.use(stage.middleware());
   }
 
