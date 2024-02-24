@@ -1,31 +1,10 @@
-import mongoose from 'mongoose';
-import {Models} from '../types/types.js';
+import {Model} from 'sequelize';
 
-const userSchema = new mongoose.Schema({
-  chatId: {
-    type: Number,
-    required: true,
-    unique: true,
-  },
-  timeInput: String,
-  time: {
-    type: Number,
-    required: true,
-  },
-  latitude: {
-    type: Number,
-    required: true,
-  },
-  longitude: {
-    type: Number,
-    required: true,
-  },
-  offset: {
-    type: Number,
-    required: true,
-  },
-});
-
-const User = mongoose.model(Models.USERS, userSchema);
-
-export default User;
+export class User extends Model {
+  declare chatId: number;
+  declare timeInput: string;
+  declare time: number;
+  declare latitude: number;
+  declare longitude: number;
+  declare offset: number;
+}

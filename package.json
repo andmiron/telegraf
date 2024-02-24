@@ -9,8 +9,7 @@
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts",
-    "start": "tsc && node ./dist/app.js",
-    "prepare": "husky install"
+    "start": "tsc && node ./dist/app.js"
   },
   "lint-staged": {
     "*.ts": [
@@ -48,9 +47,10 @@
     "cron": "^2.4.0",
     "dotenv": "^16.3.1",
     "moment": "^2.29.4",
-    "mongoose": "^7.4.0",
     "pino": "^8.14.1",
     "pino-pretty": "^10.0.1",
+    "sequelize": "^6.37.1",
+    "sqlite3": "^5.1.7",
     "telegraf": "^4.12.2"
   }
 }

@@ -1,37 +1,28 @@
 import {Scenes, session, Telegraf} from 'telegraf';
 import {LoggerService} from './logger.service.js';
 import {DatabaseService} from '../db/database.service.js';
-import {ConfigService} from './config.service.js';
-import {EnvironmentVariableKeys} from '../types/types.js';
 import {CronService} from './cron.service.js';
 import {BaseScene, Stage} from 'telegraf/scenes';
 import {BotCommandInterface} from '../interfaces/bot.command.interface.js';
-import {WeatherClient} from './weather.client.js';
 import {CustomContext} from '../interfaces/custom.context.js';
 
 export class TelegrafService {
   private readonly bot: Telegraf<CustomContext>;
-  private readonly configService: ConfigService;
   private readonly loggerService: LoggerService;
   private readonly databaseService: DatabaseService;
-  private readonly weatherClient: WeatherClient;
   private cron: CronService;
   private commands: BotCommandInterface[];
   private scenes: Scenes.BaseScene<CustomContext>[];
 
   constructor(
     bot: Telegraf<CustomContext>,
-    config: ConfigService,
     logger: LoggerService,
     database: DatabaseService,
-    weather: WeatherClient,
     cron: CronService
   ) {
     this.bot = bot;
-    this.configService = config;
     this.loggerService = logger;
     this.databaseService = database;
-    this.weatherClient = weather;
     this.cron = cron;
     this.commands = [];
     this.scenes = [];
@@ -49,10 +40,10 @@ export class TelegrafService {
     this.bot.telegram
       .setMyCommands(this.commands)
       .then(() => {
-        this.loggerService.logInfo('Command menu set');
+        this.loggerService.logInfo('Commands menu set');
       })
       .catch(err => {
-        this.loggerService.logError(err);
+        this.loggerService.logError(err.message);
       });
   }
 
@@ -83,14 +74,9 @@ export class TelegrafService {
 
   connectDatabase() {
     this.databaseService
-      .connectDb(this.configService.getToken(EnvironmentVariableKeys.MONGO_DB_STRING))
-      .then(() => {
-        this.loggerService.logInfo('Database connected');
-      })
-      .catch(err => {
-        this.loggerService.logError(err);
-        throw new Error(err.message);
-      });
+      .connectDb()
+      .then(() => this.loggerService.logInfo('Database connected!'))
+      .catch(err => this.loggerService.logError(err.messagge));
   }
 
   launchBot() {

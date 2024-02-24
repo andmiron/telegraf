@@ -52,7 +52,7 @@ export class CronService {
         }
       }
     } catch (err) {
-      this.loggerService.logError(err as Error);
+      this.loggerService.logError('Cron job error!');
     }
   };
 

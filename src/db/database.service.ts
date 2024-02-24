@@ -1,35 +1,61 @@
-import mongoose from 'mongoose';
-import User from './model.user.js';
+import {User} from './model.user.js';
+import {DataTypes, Sequelize} from 'sequelize';
+import {Models} from '../types/types.js';
 import {UserDto} from '../dto/user.dto.js';
 
 export class DatabaseService {
-  async connectDb(connectionString: string) {
-    await mongoose.connect(connectionString);
+  async connectDb() {
+    const sequelize = new Sequelize('sqlite::memory:');
+    User.init(
+      {
+        chatId: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          unique: true,
+        },
+        timeInput: {
+          type: DataTypes.STRING,
+          allowNull: false,
+        },
+        time: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+        },
+        latitude: {
+          type: DataTypes.FLOAT,
+          allowNull: false,
+        },
+        longitude: {
+          type: DataTypes.FLOAT,
+          allowNull: false,
+        },
+        offset: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+        },
+      },
+      {
+        sequelize: sequelize,
+        modelName: Models.USERS,
+      }
+    );
+    await sequelize.sync();
+    await sequelize.authenticate();
   }
 
-  async createOrUpdateUser(userData: UserDto) {
-    return User.findOneAndUpdate(
-      {chatId: userData.chatId},
-      {
-        offset: userData.offset,
-        latitude: userData.latitude,
-        longitude: userData.longitude,
-        timeInput: userData.timeInput,
-        time: userData.time,
-      },
-      {new: true, upsert: true}
-    );
+  async upsert(user: UserDto) {
+    return User.upsert({...user});
   }
 
   async findAllUsers() {
-    return User.find().exec();
+    return User.findAll();
   }
 
   async findUser(chatId: number) {
-    return User.findOne({chatId: chatId}).exec();
+    return User.findOne({where: {chatId}});
   }
 
   async deleteUser(chatId: number) {
-    return User.deleteOne({chatId: chatId});
+    return User.destroy({where: {chatId}});
   }
 }

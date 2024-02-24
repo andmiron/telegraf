@@ -45,7 +45,7 @@ export class LoggerService {
     this.logger.info({info: info});
   }
 
-  logError(error: Error): void {
-    this.logger.error({error: error});
+  logError(errMsg: string): void {
+    this.logger.error({error: errMsg});
   }
 }
