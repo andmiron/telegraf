@@ -90,7 +90,7 @@ export class SubscribeScene extends SceneCreator {
           chatId: ctx.scene.session.chatId,
         };
 
-        await this.database.createOrUpdateUser(userData);
+        await this.database.upsert(userData);
         this.logger.logInfo(`User ${ctx.message.from.first_name} saved to db`);
 
         await ctx.reply(BotResponse.SUBSCRIBED + ctx.scene.session.timeInput);
@@ -98,7 +98,7 @@ export class SubscribeScene extends SceneCreator {
         await ctx.scene.leave();
         this.logger.logInfo(`User ${ctx.message.from.first_name} exited the scene`);
       } catch (err) {
-        this.logger.logError(err as Error);
+        this.logger.logError('Error saving the user to db!');
         await ctx.reply(BotResponse.WEATHER_FETCH_ERROR);
         await ctx.scene.leave();
       }

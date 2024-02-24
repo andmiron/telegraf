@@ -32,10 +32,8 @@ class App {
   );
   private telegrafService = new TelegrafService(
     this.bot,
-    this.configService,
     this.loggerService,
     this.databaseService,
-    this.weatherClient,
     this.cron
   );
 

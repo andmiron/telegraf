@@ -1,7 +1,6 @@
 import {ConfigService} from './config.service.js';
 import {EnvironmentVariableKeys, WeatherAPI, WeatherDto, WeatherGroup} from '../types/types.js';
 import axios from 'axios';
-import {LoggerService} from './logger.service.js';
 import moment from 'moment/moment.js';
 
 export class WeatherClient {
@@ -32,22 +31,22 @@ export class WeatherClient {
       const sunrise = moment.unix(weatherData.sys.sunrise + weatherData.timezone).format('HH:mm');
 
       const weatherObject: WeatherDto = {
-        cityName: cityName,
-        weatherDescription: weatherDescription,
-        weatherGroup: weatherGroup,
-        minTemp: minTemp,
-        maxTemp: maxTemp,
-        feels_like: feels_like,
-        humidity: humidity,
-        windSpeed: windSpeed,
-        icon: icon,
-        sunset: sunset,
-        sunrise: sunrise,
+        cityName,
+        weatherDescription,
+        weatherGroup,
+        minTemp,
+        maxTemp,
+        feels_like,
+        humidity,
+        windSpeed,
+        icon,
+        sunset,
+        sunrise,
       };
 
       return weatherObject;
     } catch (err) {
-      new LoggerService().logError(err as Error);
+      throw new Error('Weather client error!');
     }
   }
 }
