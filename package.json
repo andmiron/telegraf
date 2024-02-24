@@ -4,12 +4,23 @@
   "type": "module",
   "description": "subscription bot",
   "main": "index.js",
+  "author": "Andrii Myronenko",
+  "prettier": "prettier-airbnb-config",
   "scripts": {
-    "start": "npx tsc && node ./dist/app.js"
+    "format": "prettier --write .",
+    "lint": "eslint . --ext .ts",
+    "start": "tsc && node ./dist/app.js",
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "prettier --write",
+      "eslint --cache --fix --max-warnings 0 ."
+    ]
   },
   "repository": {
     "type": "git",
-    "url": "git@git.foxminded.ua:foxstudent105275/task-3.5.git"
+    "url": "https://github.com/andmiron/weather-bot.git"
   },
   "keywords": [
     "telegram",
@@ -17,9 +28,6 @@
     "nodejs",
     "cron"
   ],
-  "author": "Andrii Myronenko",
-  "license": "ISC",
-  "prettier": "prettier-airbnb-config",
   "devDependencies": {
     "@types/cron": "^2.0.1",
     "@types/node": "^20.4.1",
@@ -29,8 +37,8 @@
     "eslint": "^8.44.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^5.0.0",
-    "nodemon": "^3.0.1",
-    "prettier": "^3.0.0",
+    "nodemon": "^3.1.0",
+    "prettier": "^3.2.5",
     "prettier-airbnb-config": "^1.0.0",
     "typegram": "^5.0.0",
     "typescript": "^5.1.6"
@@ -39,12 +47,10 @@
     "axios": "^1.4.0",
     "cron": "^2.4.0",
     "dotenv": "^16.3.1",
-    "md5-file": "^5.0.0",
     "moment": "^2.29.4",
     "mongoose": "^7.4.0",
     "pino": "^8.14.1",
     "pino-pretty": "^10.0.1",
-    "telegraf": "^4.12.2",
-    "telegraf-session-local": "^2.1.1"
+    "telegraf": "^4.12.2"
   }
 }

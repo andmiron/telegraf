@@ -2,7 +2,7 @@ import {SceneCreator} from './scene.creator.js';
 import {KeyboardButton} from 'typegram';
 import {Markup} from 'telegraf';
 import {TimeConverterClass} from '../utils/timeConverter.class.js';
-import {DatabaseClass} from '../db/database.class.js';
+import {DatabaseService} from '../db/database.service.js';
 import {LoggerService} from '../services/logger.service.js';
 import {BotResponse, RegExpTriggers} from '../types/types.js';
 import {BaseScene} from 'telegraf/scenes';
@@ -11,10 +11,10 @@ import {UserDto} from '../dto/user.dto.js';
 
 export class SubscribeScene extends SceneCreator {
   private scene: BaseScene<CustomContext>;
-  private database: DatabaseClass;
+  private database: DatabaseService;
   private logger: LoggerService;
 
-  constructor(sceneId: string, database: DatabaseClass, logger: LoggerService) {
+  constructor(sceneId: string, database: DatabaseService, logger: LoggerService) {
     super();
     this.scene = new BaseScene<CustomContext>(sceneId);
     this.database = database;
@@ -112,7 +112,7 @@ export class SubscribeScene extends SceneCreator {
     });
   }
 
-  getScene() {
+  getScene(): BaseScene<CustomContext> {
     this.createScene();
     return this.scene;
   }

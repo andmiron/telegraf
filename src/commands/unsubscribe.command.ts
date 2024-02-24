@@ -1,5 +1,5 @@
 import {Telegraf} from 'telegraf';
-import {DatabaseClass} from '../db/database.class.js';
+import {DatabaseService} from '../db/database.service.js';
 import {LoggerService} from '../services/logger.service.js';
 import {BotCommandInterface} from '../interfaces/bot.command.interface.js';
 import {BotResponse} from '../types/types.js';
@@ -10,14 +10,14 @@ export class UnsubscribeCommand implements BotCommandInterface {
   description: string;
 
   private bot: Telegraf<CustomContext>;
-  private database: DatabaseClass;
+  private database: DatabaseService;
   private logger: LoggerService;
 
   constructor(
     command: string,
     description: string,
     bot: Telegraf<CustomContext>,
-    database: DatabaseClass,
+    database: DatabaseService,
     logger: LoggerService
   ) {
     this.command = command;

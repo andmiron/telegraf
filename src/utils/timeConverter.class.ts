@@ -13,10 +13,12 @@ export class TimeConverterClass {
     const timestamp = Math.floor(Date.now() / 1000);
 
     const requestString = `https://maps.googleapis.com/maps/api/timezone/json?location=${+lat}%2C${+lng}&timestamp=${+timestamp}&key=${apiKey}`;
-    const axiosResponse = await axios.get(requestString);
-
-    const {rawOffset, dstOffset} = axiosResponse.data;
-
-    return rawOffset / 60 + dstOffset / 60;
+    try {
+      const axiosResponse = await axios.get(requestString);
+      const {rawOffset, dstOffset} = axiosResponse.data;
+      return rawOffset / 60 + dstOffset / 60;
+    } catch (err) {
+      throw new Error('Google Maps API error!');
+    }
   }
 }

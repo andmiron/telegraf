@@ -1,5 +1,5 @@
 import {CronJob} from 'cron';
-import {DatabaseClass} from '../db/database.class.js';
+import {DatabaseService} from '../db/database.service.js';
 import {WeatherClient} from './weather.client.js';
 import {Telegraf} from 'telegraf';
 import {ConfigService} from './config.service.js';
@@ -10,14 +10,14 @@ import {CustomContext} from '../interfaces/custom.context.js';
 
 export class CronService {
   private configService: ConfigService;
-  private databaseService: DatabaseClass;
+  private databaseService: DatabaseService;
   private weatherClient: WeatherClient;
   private loggerService: LoggerService;
   private bot: Telegraf<CustomContext>;
 
   constructor(
     configService: ConfigService,
-    databaseService: DatabaseClass,
+    databaseService: DatabaseService,
     weatherClient: WeatherClient,
     loggerService: LoggerService,
     bot: Telegraf<CustomContext>

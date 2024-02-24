@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import User from './model.user.js';
 import {UserDto} from '../dto/user.dto.js';
 
-export class DatabaseClass {
+export class DatabaseService {
   async connectDb(connectionString: string) {
     await mongoose.connect(connectionString);
   }

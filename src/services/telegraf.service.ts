@@ -1,18 +1,11 @@
 import {Scenes, session, Telegraf} from 'telegraf';
 import {LoggerService} from './logger.service.js';
-import {DatabaseClass} from '../db/database.class.js';
+import {DatabaseService} from '../db/database.service.js';
 import {ConfigService} from './config.service.js';
-import {Commands, CommandsDescription, EnvironmentVariableKeys, ScenesId} from '../types/types.js';
+import {EnvironmentVariableKeys} from '../types/types.js';
 import {CronService} from './cron.service.js';
-import {Stage} from 'telegraf/scenes';
+import {BaseScene, Stage} from 'telegraf/scenes';
 import {BotCommandInterface} from '../interfaces/bot.command.interface.js';
-import {StartCommand} from '../commands/start.command.js';
-import {GetWeatherCommand} from '../commands/getWeather.command.js';
-import {SubscribeCommand} from '../commands/subscribe.command.js';
-import {UnsubscribeCommand} from '../commands/unsubscribe.command.js';
-import {UpdateCommand} from '../commands/update.command.js';
-import {CheckCommand} from '../commands/check.command.js';
-import {SubscribeScene} from '../scenes/subscribe.scene.js';
 import {WeatherClient} from './weather.client.js';
 import {CustomContext} from '../interfaces/custom.context.js';
 
@@ -20,74 +13,36 @@ export class TelegrafService {
   private readonly bot: Telegraf<CustomContext>;
   private readonly configService: ConfigService;
   private readonly loggerService: LoggerService;
-  private readonly databaseService: DatabaseClass;
+  private readonly databaseService: DatabaseService;
   private readonly weatherClient: WeatherClient;
   private cron: CronService;
   private commands: BotCommandInterface[];
   private scenes: Scenes.BaseScene<CustomContext>[];
 
-  constructor() {
-    this.configService = new ConfigService();
-    this.loggerService = new LoggerService();
-    this.databaseService = new DatabaseClass();
-    this.weatherClient = new WeatherClient();
-    this.bot = new Telegraf<CustomContext>(
-      this.configService.getToken(EnvironmentVariableKeys.TELEGRAM_BOT_TOKEN)
-    );
-    this.cron = new CronService(
-      this.configService,
-      this.databaseService,
-      this.weatherClient,
-      this.loggerService,
-      this.bot
-    );
+  constructor(
+    bot: Telegraf<CustomContext>,
+    config: ConfigService,
+    logger: LoggerService,
+    database: DatabaseService,
+    weather: WeatherClient,
+    cron: CronService
+  ) {
+    this.bot = bot;
+    this.configService = config;
+    this.loggerService = logger;
+    this.databaseService = database;
+    this.weatherClient = weather;
+    this.cron = cron;
     this.commands = [];
     this.scenes = [];
   }
 
-  registerCommands() {
-    this.commands.push(new StartCommand(Commands.START, CommandsDescription.START, this.bot));
-    this.commands.push(
-      new GetWeatherCommand(
-        Commands.WEATHER,
-        CommandsDescription.WEATHER,
-        this.bot,
-        this.weatherClient
-      )
-    );
-    this.commands.push(
-      new SubscribeCommand(
-        Commands.SUBSCRIBE,
-        CommandsDescription.SUBSCRIBE,
-        this.bot,
-        this.databaseService
-      )
-    );
-    this.commands.push(
-      new UnsubscribeCommand(
-        Commands.UNSUBSCRIBE,
-        CommandsDescription.UNSUBSCRIBE,
-        this.bot,
-        this.databaseService,
-        this.loggerService
-      )
-    );
-    this.commands.push(
-      new UpdateCommand(Commands.UPDATE, CommandsDescription.UPDATE, this.bot, this.databaseService)
-    );
-    this.commands.push(
-      new CheckCommand(Commands.CHECK, CommandsDescription.CHECK, this.bot, this.databaseService)
-    );
+  registerCommand(command: BotCommandInterface) {
+    this.commands.push(command);
   }
 
-  registerScenes() {
-    this.scenes.push(
-      new SubscribeScene(
-        ScenesId.WEATHER_SCENE,
-        this.databaseService,
-        this.loggerService
-      ).getScene()
-    );
+  registerScenes(scene: BaseScene<CustomContext>) {
+    this.scenes.push(scene);
   }
 
   createCommandsMenu() {
@@ -134,6 +89,7 @@ export class TelegrafService {
       })
       .catch(err => {
         this.loggerService.logError(err);
+        throw new Error(err.message);
       });
   }
 
@@ -146,6 +102,7 @@ export class TelegrafService {
       })
       .catch(err => {
         this.loggerService.logError(err);
+        throw new Error(err.message);
       });
   }
 }
