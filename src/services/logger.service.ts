@@ -3,6 +3,7 @@ import {EnvironmentVariableKeys, LoggerOptions} from '../types/types.js';
 import {pino, TransportSingleOptions} from 'pino';
 import {cwd} from 'node:process';
 import path from 'node:path';
+import {User} from '../db/model.user.js';
 
 export class LoggerService {
   private readonly logger: pino.Logger;
@@ -43,6 +44,10 @@ export class LoggerService {
 
   logInfo(info: string): void {
     this.logger.info({info: info});
+  }
+
+  logUsers(users: User[]) {
+    this.logger.info(users);
   }
 
   logError(errMsg: string): void {

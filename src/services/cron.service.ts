@@ -35,6 +35,7 @@ export class CronService {
 
     try {
       const users = await this.databaseService.findAllUsers();
+      this.loggerService.logUsers(users);
       for (const user of users) {
         const userMinute = user.time;
         const {latitude, longitude} = user;
