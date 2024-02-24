@@ -14,5 +14,3 @@ export class ConfigService {
     return this.envConfig[envVarKey];
   }
 }
-
-const here = 3;

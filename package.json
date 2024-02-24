@@ -15,7 +15,7 @@
   "lint-staged": {
     "*.ts": [
       "prettier --write",
-      "eslint --cache --fix --max-warnings 0 ."
+      "eslint --cache --fix"
     ]
   },
   "repository": {
