@@ -9,8 +9,7 @@
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts",
-    "start": "tsc && node ./dist/app.js",
-    "prepare": "husky install"
+    "start": "tsc && node ./dist/app.js"
   },
   "lint-staged": {
     "*.ts": [
