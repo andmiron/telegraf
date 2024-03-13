@@ -1,0 +1,22 @@
+org: andmiron
+app: aws-telegram-bot
+service: aws-telegram-bot
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+
+plugins:
+  - serverless-offline
+  - serverless-dotenv-plugin
+  - serverless-plugin-typescript
+
+functions:
+  start:
+    handler: src/server.handler
+    events:
+      - http:
+          path: /webhook
+          method: post
+          cors: true
+

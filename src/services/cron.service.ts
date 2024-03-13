@@ -1,68 +1,61 @@
-import {CronJob} from 'cron';
-import {DatabaseService} from '../db/database.service.js';
-import {WeatherClient} from './weather.client.js';
-import {Telegraf} from 'telegraf';
-import {ConfigService} from './config.service.js';
-import {BotResponse, EnvironmentVariableKeys} from '../types/types.js';
-import {LoggerService} from './logger.service.js';
-import {StringGenerator} from '../utils/string.generator.js';
-import {CustomContext} from '../interfaces/custom.context.js';
+import { CronJob } from 'cron';
+import { DatabaseService } from '../db/database.service';
+import { WeatherClient } from './weather.client';
+import { Telegraf } from 'telegraf';
+import { ConfigService } from './config.service';
+import { BotResponse, EnvironmentVariableKeys } from '../types/types';
+import { LoggerService } from './logger.service';
+import { generateWeatherString } from '../utils/string.generator';
+import { CustomContext } from '../interfaces/custom.context';
+import { isMinuteToRunCron } from '../utils/timeConverter.class';
 
 export class CronService {
-  private configService: ConfigService;
-  private databaseService: DatabaseService;
-  private weatherClient: WeatherClient;
-  private loggerService: LoggerService;
-  private bot: Telegraf<CustomContext>;
+   private configService: ConfigService;
+   private databaseService: DatabaseService;
+   private weatherClient: WeatherClient;
+   private loggerService: LoggerService;
+   private bot: Telegraf<CustomContext>;
 
-  constructor(
-    configService: ConfigService,
-    databaseService: DatabaseService,
-    weatherClient: WeatherClient,
-    loggerService: LoggerService,
-    bot: Telegraf<CustomContext>
-  ) {
-    this.configService = configService;
-    this.databaseService = databaseService;
-    this.weatherClient = weatherClient;
-    this.loggerService = loggerService;
-    this.bot = bot;
-  }
+   constructor(
+      configService: ConfigService,
+      databaseService: DatabaseService,
+      weatherClient: WeatherClient,
+      loggerService: LoggerService,
+      bot: Telegraf<CustomContext>,
+   ) {
+      this.configService = configService;
+      this.databaseService = databaseService;
+      this.weatherClient = weatherClient;
+      this.loggerService = loggerService;
+      this.bot = bot;
+   }
 
-  onTick = async () => {
-    const currentDate = new Date();
-    const currentMinute = currentDate.getHours() * 60 + currentDate.getMinutes();
-
-    try {
-      const users = await this.databaseService.findAllUsers();
-      for (const user of users) {
-        const userMinute = user.time;
-        const {latitude, longitude} = user;
-        const {chatId} = user;
-        const weatherData = await this.weatherClient.getForecast(latitude, longitude);
-
-        if (currentMinute + user.offset === userMinute && weatherData) {
-          const weatherString = new StringGenerator().generateWeatherString(weatherData);
-          await this.bot.telegram.sendMessage(chatId, weatherString);
-          this.loggerService.logInfo(`Chat ${chatId} received weather update.`);
-        }
-
-        if (!weatherData) {
-          await this.bot.telegram.sendMessage(chatId, BotResponse.WEATHER_FETCH_ERROR);
-        }
+   onTick = async () => {
+      try {
+         const users = await this.databaseService.findAllUsers();
+         for (const user of users) {
+            const weatherData = await this.weatherClient.getForecast(user.latitude, user.longitude);
+            if (isMinuteToRunCron(user.time, user.offset) && weatherData) {
+               const weatherString = generateWeatherString(weatherData);
+               await this.bot.telegram.sendMessage(user.chatId, weatherString);
+               this.loggerService.logInfo(`Chat ${user.chatId} received weather update.`);
+            }
+            if (!weatherData) {
+               await this.bot.telegram.sendMessage(user.chatId, BotResponse.WEATHER_FETCH_ERROR);
+            }
+         }
+      } catch (err) {
+         this.loggerService.logError('Cron job error!');
       }
-    } catch (err) {
-      this.loggerService.logError('Cron job error!');
-    }
-  };
+   };
 
-  start() {
-    new CronJob(
-      this.configService.getToken(EnvironmentVariableKeys.CRON_TIME),
-      this.onTick,
-      null,
-      true,
-      this.configService.getToken(EnvironmentVariableKeys.TZ)
-    );
-  }
+   start() {
+      new CronJob(
+         this.configService.getToken(EnvironmentVariableKeys.CRON_TIME),
+         this.onTick,
+         null,
+         true,
+         this.configService.getToken(EnvironmentVariableKeys.TZ),
+      );
+   }
 }

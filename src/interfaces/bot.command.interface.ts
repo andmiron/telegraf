@@ -1,7 +1,7 @@
-import {BotCommand} from 'typegram';
+import { BotCommand } from '@grammyjs/types';
 
 export interface BotCommandInterface extends BotCommand {
-  command: string;
-  description: string;
-  execute(): void;
+   command: string;
+   description: string;
+   execute(): void;
 }

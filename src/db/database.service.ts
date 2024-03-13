@@ -1,61 +1,25 @@
-import {User} from './model.user.js';
-import {DataTypes, Sequelize} from 'sequelize';
-import {Models} from '../types/types.js';
-import {UserDto} from '../dto/user.dto.js';
+import User from './model.user';
+import { UserDto } from '../dto/user.dto';
+import mongoose from 'mongoose';
 
 export class DatabaseService {
-  async connectDb() {
-    const sequelize = new Sequelize('sqlite::memory:');
-    User.init(
-      {
-        chatId: {
-          type: DataTypes.INTEGER,
-          allowNull: false,
-          unique: true,
-        },
-        timeInput: {
-          type: DataTypes.STRING,
-          allowNull: false,
-        },
-        time: {
-          type: DataTypes.INTEGER,
-          allowNull: false,
-        },
-        latitude: {
-          type: DataTypes.FLOAT,
-          allowNull: false,
-        },
-        longitude: {
-          type: DataTypes.FLOAT,
-          allowNull: false,
-        },
-        offset: {
-          type: DataTypes.INTEGER,
-          allowNull: false,
-        },
-      },
-      {
-        sequelize: sequelize,
-        modelName: Models.USERS,
-      }
-    );
-    await sequelize.sync();
-    await sequelize.authenticate();
-  }
+   async connectDb(connectionString: string) {
+      await mongoose.connect(connectionString);
+   }
 
-  async upsert(user: UserDto) {
-    return User.upsert({...user});
-  }
+   async upsert(user: UserDto) {
+      return User.findOneAndUpdate({ chatId: user.chatId }, user, { upsert: true }).exec();
+   }
 
-  async findAllUsers() {
-    return User.findAll();
-  }
+   async findAllUsers() {
+      return User.find({}).exec();
+   }
 
-  async findUser(chatId: number) {
-    return User.findOne({where: {chatId}});
-  }
+   async findUser(chatId: number) {
+      return User.findOne({ chatId }).exec();
+   }
 
-  async deleteUser(chatId: number) {
-    return User.destroy({where: {chatId}});
-  }
+   async deleteUser(chatId: number) {
+      return User.deleteOne({ chatId });
+   }
 }
