@@ -1,4 +1,3 @@
-import { ConfigService } from '../services/config.service';
 import { EnvironmentVariableKeys } from '../types/types';
 import axios from 'axios';
 
@@ -14,7 +13,7 @@ export function isMinuteToRunCron(userTime: number, offset: number): boolean {
 }
 
 export async function getUtcOffsetMinutesFromCoordinates(lat: number, lng: number) {
-   const apiKey = new ConfigService().getToken(EnvironmentVariableKeys.GOOGLE_MAPS_API_KEY);
+   const apiKey = process.env[EnvironmentVariableKeys.GOOGLE_MAPS_API_KEY]!;
    const timestamp = Math.floor(Date.now() / 1000);
 
    const requestString = `https://maps.googleapis.com/maps/api/timezone/json?location=${+lat}%2C${+lng}&timestamp=${+timestamp}&key=${apiKey}`;

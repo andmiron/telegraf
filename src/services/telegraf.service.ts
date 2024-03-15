@@ -5,7 +5,6 @@ import { CronService } from './cron.service';
 import { Stage } from 'telegraf/scenes';
 import { BotCommandInterface } from '../interfaces/bot.command.interface';
 import { CustomContext } from '../interfaces/custom.context';
-import { ConfigService } from './config.service';
 import { SubscribeCommand } from '../commands/subscribe.command';
 import { Commands, CommandsDescription, EnvironmentVariableKeys, ScenesId } from '../types/types';
 import { UnsubscribeCommand } from '../commands/unsubscribe.command';
@@ -16,22 +15,16 @@ import { StartCommand } from '../commands/start.command';
 import { GetWeatherCommand } from '../commands/getWeather.command';
 import { WeatherClient } from './weather.client';
 import { APIGatewayProxyEvent } from 'aws-lambda';
+import 'dotenv/config';
 
 export class TelegrafService {
-   private configService: ConfigService = new ConfigService();
    private loggerService: LoggerService = new LoggerService();
    private databaseService: DatabaseService = new DatabaseService();
    private weatherClient: WeatherClient = new WeatherClient();
    private bot: Telegraf<CustomContext> = new Telegraf<CustomContext>(
-      this.configService.getToken(EnvironmentVariableKeys.TELEGRAM_BOT_TOKEN),
+      process.env[EnvironmentVariableKeys.TELEGRAM_BOT_TOKEN]!,
    );
-   private cron: CronService = new CronService(
-      this.configService,
-      this.databaseService,
-      this.weatherClient,
-      this.loggerService,
-      this.bot,
-   );
+   private cron: CronService = new CronService(this.databaseService, this.weatherClient, this.loggerService, this.bot);
    private commands: BotCommandInterface[] = [];
    private scenes: Scenes.BaseScene<CustomContext>[] = [];
 
@@ -98,7 +91,7 @@ export class TelegrafService {
 
    async connectDatabase() {
       try {
-         await this.databaseService.connectDb(this.configService.getToken(EnvironmentVariableKeys.MONGO_DB_STRING));
+         await this.databaseService.connectDb(process.env[EnvironmentVariableKeys.MONGO_DB_STRING]!);
          this.loggerService.logInfo('database connected');
       } catch (err) {
          this.loggerService.logError('database connection error');

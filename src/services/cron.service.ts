@@ -2,7 +2,6 @@ import { CronJob } from 'cron';
 import { DatabaseService } from '../db/database.service';
 import { WeatherClient } from './weather.client';
 import { Telegraf } from 'telegraf';
-import { ConfigService } from './config.service';
 import { BotResponse, EnvironmentVariableKeys } from '../types/types';
 import { LoggerService } from './logger.service';
 import { generateWeatherString } from '../utils/string.generator';
@@ -10,20 +9,17 @@ import { CustomContext } from '../interfaces/custom.context';
 import { isMinuteToRunCron } from '../utils/timeConverter.class';
 
 export class CronService {
-   private configService: ConfigService;
    private databaseService: DatabaseService;
    private weatherClient: WeatherClient;
    private loggerService: LoggerService;
    private bot: Telegraf<CustomContext>;
 
    constructor(
-      configService: ConfigService,
       databaseService: DatabaseService,
       weatherClient: WeatherClient,
       loggerService: LoggerService,
       bot: Telegraf<CustomContext>,
    ) {
-      this.configService = configService;
       this.databaseService = databaseService;
       this.weatherClient = weatherClient;
       this.loggerService = loggerService;
@@ -51,11 +47,11 @@ export class CronService {
 
    start() {
       new CronJob(
-         this.configService.getToken(EnvironmentVariableKeys.CRON_TIME),
+         process.env[EnvironmentVariableKeys.CRON_TIME]!,
          this.onTick,
          null,
          true,
-         this.configService.getToken(EnvironmentVariableKeys.TZ),
+         process.env[EnvironmentVariableKeys.TZ]!,
       );
    }
 }

@@ -6,9 +6,9 @@
    "author": "Andrii Myronenko",
    "scripts": {
       "format": "prettier --write .",
-      "dev": "nodemon server.ts",
+      "dev": "nodemon",
       "lint": "eslint . --ext .ts",
-      "start": "tsc && node ./dist/app "
+      "start": "ts-node src/server.ts"
    },
    "lint-staged": {
       "*.ts": [
@@ -53,7 +53,8 @@
       "serverless-dotenv-plugin": "^6.0.0",
       "serverless-http": "^3.2.0",
       "serverless-plugin-typescript": "^2.1.5",
-      "telegraf": "^4.12.2"
+      "telegraf": "^4.12.2",
+      "ts-node": "^10.9.2"
    },
    "prettier": {
       "printWidth": 120,
@@ -97,6 +98,6 @@
          "src"
       ],
       "ext": "ts",
-      "exec": "ts-node ./src/server.ts"
+      "exec": "ts-node ./src/server.dev.ts"
    }
 }

@@ -1,4 +1,3 @@
-import { ConfigService } from './config.service';
 import { EnvironmentVariableKeys, WeatherAPI, WeatherDto, WeatherGroup } from '../types/types';
 import axios from 'axios';
 import moment from 'moment/moment';
@@ -6,7 +5,7 @@ import moment from 'moment/moment';
 export class WeatherClient {
    private readonly apiKey: string;
    constructor() {
-      this.apiKey = new ConfigService().getToken(EnvironmentVariableKeys.WEATHER_API_KEY);
+      this.apiKey = process.env[EnvironmentVariableKeys.WEATHER_API_KEY]!;
    }
 
    async getForecast(lat: number, lon: number) {

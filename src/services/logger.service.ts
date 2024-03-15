@@ -1,4 +1,3 @@
-import { ConfigService } from './config.service';
 import { EnvironmentVariableKeys, LoggerOptions } from '../types/types';
 import { pino, TransportSingleOptions } from 'pino';
 import { cwd } from 'node:process';
@@ -8,7 +7,7 @@ export class LoggerService {
    private readonly logger: pino.Logger;
 
    constructor() {
-      const envConfig = new ConfigService().getToken(EnvironmentVariableKeys.NODE_ENV);
+      const envConfig = process.env[EnvironmentVariableKeys.NODE_ENV]!;
 
       const transport: TransportSingleOptions =
          envConfig === LoggerOptions.DEVELOPMENT ? this.createDevTransport() : this.createProdTransport();
