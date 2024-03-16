@@ -3,7 +3,9 @@
 /dist
 /node_modules
 .env
-package-lock.json
+package-lock on
 .eslintcache
 ./.husky
+.serverless
+.build
 /path
