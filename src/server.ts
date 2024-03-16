@@ -9,11 +9,17 @@ bot.registerScenes();
 bot.createCommandsMenu();
 bot.createStage();
 bot.registerMiddlewares();
-bot.startCronJob();
+
 export async function handler(event: APIGatewayProxyEvent) {
    await bot.connectDatabase();
    await bot.handleUpdate(event);
    return {
       statusCode: 200,
    };
+}
+
+export async function cron(event: APIGatewayProxyEvent) {
+   await bot.connectDatabase();
+   await bot.handleUpdate(event);
+   bot.startCronJob();
 }

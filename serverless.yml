@@ -3,20 +3,23 @@ app: aws-telegram-bot
 service: aws-telegram-bot
 
 provider:
-  name: aws
-  runtime: nodejs18.x
+   name: aws
+   runtime: nodejs18.x
 
 plugins:
-  - serverless-offline
-  - serverless-dotenv-plugin
-  - serverless-plugin-typescript
+   - serverless-offline
+   - serverless-dotenv-plugin
+   - serverless-plugin-typescript
 
 functions:
-  start:
-    handler: src/server.handler
-    events:
-      - http:
-          path: /webhook
-          method: post
-          cors: true
-
+   start:
+      handler: src/server.handler
+      events:
+         - http:
+              path: /webhook
+              method: post
+              cors: true
+   cron:
+      handler: src/server.cron
+      events:
+         - schedule: rate(1 minute)
