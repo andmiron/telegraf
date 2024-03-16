@@ -35,7 +35,6 @@
       "eslint-config-prettier": "^8.8.0",
       "eslint-plugin-prettier": "^5.0.0",
       "nodemon": "^3.1.0",
-      "pino-pretty": "^10.0.1",
       "prettier": "^3.2.5",
       "serverless-offline": "^13.3.3",
       "typescript": "^5.1.6"
@@ -48,6 +47,7 @@
       "moment": "^2.29.4",
       "mongoose": "^8.2.1",
       "pino": "^8.14.1",
+      "pino-pretty": "^10.0.1",
       "sequelize": "^6.37.1",
       "serverless-dotenv-plugin": "^6.0.0",
       "serverless-http": "^3.2.0",
