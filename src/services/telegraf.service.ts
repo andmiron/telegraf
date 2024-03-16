@@ -6,7 +6,7 @@ import { Stage } from 'telegraf/scenes';
 import { BotCommandInterface } from '../interfaces/bot.command.interface';
 import { CustomContext } from '../interfaces/custom.context';
 import { SubscribeCommand } from '../commands/subscribe.command';
-import { Commands, CommandsDescription, EnvironmentVariableKeys, ScenesId } from '../types/types';
+import { Commands, CommandsDescription, EnvironmentVariableKeys, ScenesId, BotResponse } from '../types/types';
 import { UnsubscribeCommand } from '../commands/unsubscribe.command';
 import { UpdateCommand } from '../commands/update.command';
 import { CheckCommand } from '../commands/check.command';
@@ -15,6 +15,8 @@ import { StartCommand } from '../commands/start.command';
 import { GetWeatherCommand } from '../commands/getWeather.command';
 import { WeatherClient } from './weather.client';
 import { APIGatewayProxyEvent } from 'aws-lambda';
+import { isMinuteToRunCron } from '../utils/timeConverter.class';
+import { generateWeatherString } from '../utils/string.generator';
 import 'dotenv/config';
 
 export class TelegrafService {
@@ -114,4 +116,23 @@ export class TelegrafService {
    async handleUpdate(event: APIGatewayProxyEvent) {
       await this.bot.handleUpdate(JSON.parse(event.body!));
    }
+
+   onCronTick = async () => {
+      try {
+         const users = await this.databaseService.findAllUsers();
+         for (const user of users) {
+            const weatherData = await this.weatherClient.getForecast(user.latitude, user.longitude);
+            if (isMinuteToRunCron(user.time, user.offset) && weatherData) {
+               const weatherString = generateWeatherString(weatherData);
+               await this.bot.telegram.sendMessage(user.chatId, weatherString);
+               this.loggerService.logInfo(`Chat ${user.chatId} received weather update.`);
+            }
+            if (!weatherData) {
+               await this.bot.telegram.sendMessage(user.chatId, BotResponse.WEATHER_FETCH_ERROR);
+            }
+         }
+      } catch (err) {
+         this.loggerService.logError('Cron job error!');
+      }
+   };
 }

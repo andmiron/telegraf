@@ -4,11 +4,11 @@ import { APIGatewayProxyEvent } from 'aws-lambda';
 const bot = new TelegrafService();
 
 bot.registerCommands();
-bot.handleCommands();
 bot.registerScenes();
+bot.registerMiddlewares();
 bot.createCommandsMenu();
 bot.createStage();
-bot.registerMiddlewares();
+bot.handleCommands();
 
 export async function handler(event: APIGatewayProxyEvent) {
    await bot.connectDatabase();
@@ -18,8 +18,7 @@ export async function handler(event: APIGatewayProxyEvent) {
    };
 }
 
-export async function cron(event: APIGatewayProxyEvent) {
+export async function cron() {
    await bot.connectDatabase();
-   await bot.handleUpdate(event);
-   bot.startCronJob();
+   await bot.onCronTick();
 }

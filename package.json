@@ -2,13 +2,12 @@
    "name": "weather_bot",
    "version": "1.0.0",
    "description": "subscription bot",
-   "main": "index ",
    "author": "Andrii Myronenko",
    "scripts": {
       "format": "prettier --write .",
-      "dev": "nodemon",
       "lint": "eslint . --ext .ts",
-      "start": "ts-node src/server.ts"
+      "start:polling": "nodemon src/server.dev.ts",
+      "start:webhook": "sls offline"
    },
    "lint-staged": {
       "*.ts": [
@@ -98,6 +97,6 @@
          "src"
       ],
       "ext": "ts",
-      "exec": "ts-node ./src/server.dev.ts"
+      "exec": "ts-node"
    }
 }
