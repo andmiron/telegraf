@@ -61,8 +61,8 @@ export class SubscribeScene extends SceneCreator {
                .resize()
                .oneTime(),
          );
-      });
 
+      });
       this.scene.hears(BotResponse.SUBSCRIBE_BUTTON, async (ctx) => {
          try {
             ctx.scene.session.chatId = ctx.chat.id;
