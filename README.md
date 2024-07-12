@@ -43,44 +43,15 @@ Project stack:
 
 ```bash
 .
-├── compose.yaml
-├── Dockerfile
-├── package.json
-├── package-lock.json
-├── README.md
-├── serverless.yml
-├── src
-│   ├── commands
-│   │   ├── check.command.ts
-│   │   ├── getWeather.command.ts
-│   │   ├── start.command.ts
-│   │   ├── subscribe.command.ts
-│   │   ├── unsubscribe.command.ts
-│   │   └── update.command.ts
-│   ├── db
-│   │   ├── database.service.ts
-│   │   └── model.user.ts
-│   ├── dto
-│   │   └── user.dto.ts
-│   ├── interfaces
-│   │   ├── bot.command.interface.ts
-│   │   └── custom.context.ts
-│   ├── scenes
-│   │   ├── scene.creator.ts
-│   │   └── subscribe.scene.ts
-│   ├── app.ts
-│   ├── server.ts
-│   ├── services
-│   │   ├── cron.service.ts
-│   │   ├── logger.service.ts
-│   │   ├── telegraf.service.ts
-│   │   └── weather.client.ts
-│   ├── types
-│   │   └── types.ts
-│   └── utils
-│       ├── string.generator.ts
-│       └── timeConverter.class.ts
-└── tsconfig.json
+└── src
+    ├── commands
+    ├── db
+    ├── dto
+    ├── interfaces
+    ├── scenes
+    ├── services
+    ├── types
+    └── utils
 
 ```
 
