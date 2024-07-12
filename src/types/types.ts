@@ -7,6 +7,7 @@ export enum EnvironmentVariableKeys {
    WEATHER_API_KEY = 'WEATHER_API_KEY',
    MONGO_DB_STRING = 'MONGO_DB_STRING',
    GOOGLE_MAPS_API_KEY = 'GOOGLE_MAPS_API_KEY',
+   WEBHOOK_DOMAIN = 'WEBHOOK_DOMAIN'
 }
 
 export enum LoggerOptions {

@@ -6,7 +6,7 @@ import { Stage } from 'telegraf/scenes';
 import { BotCommandInterface } from '../interfaces/bot.command.interface';
 import { CustomContext } from '../interfaces/custom.context';
 import { SubscribeCommand } from '../commands/subscribe.command';
-import { Commands, CommandsDescription, EnvironmentVariableKeys, ScenesId, BotResponse } from '../types/types';
+import { Commands, CommandsDescription, EnvironmentVariableKeys, ScenesId } from '../types/types';
 import { UnsubscribeCommand } from '../commands/unsubscribe.command';
 import { UpdateCommand } from '../commands/update.command';
 import { CheckCommand } from '../commands/check.command';
@@ -14,9 +14,7 @@ import { SubscribeScene } from '../scenes/subscribe.scene';
 import { StartCommand } from '../commands/start.command';
 import { GetWeatherCommand } from '../commands/getWeather.command';
 import { WeatherClient } from './weather.client';
-import { APIGatewayProxyEvent } from 'aws-lambda';
-import { isMinuteToRunCron } from '../utils/timeConverter.class';
-import { generateWeatherString } from '../utils/string.generator';
+import express from 'express';
 import 'dotenv/config';
 
 export class TelegrafService {
@@ -100,39 +98,38 @@ export class TelegrafService {
       }
    }
 
-   launchBot() {
+   async attachWebhook() {
+      const app = express();
+      app.use(express.json());
+      await this.bot.telegram.setWebhook(
+         `${process.env[EnvironmentVariableKeys.WEBHOOK_DOMAIN]}/telegraf/${this.bot.secretPathComponent()}`,
+      );
+      app.use(this.bot.webhookCallback(`/telegraf/${this.bot.secretPathComponent()}`));
+      app.get('/getWebhook', async (req, res) => {
+         const response = await fetch(
+            `https://api.telegram.org/${process.env[EnvironmentVariableKeys.TELEGRAM_BOT_TOKEN]}/getWebhookInfo`,
+         );
+         const data = await response.json();
+         if (data.ok) {
+            res.status(200).send(data.result.url);
+         } else {
+            res.status(400).send('Incorrect token');
+         }
+      });
+      return app;
+   }
+
+   startPolling() {
       this.bot.telegram
          .getMe()
          .then((botInfo) => {
-            this.bot.launch({ allowedUpdates: ['message'] });
+            this.bot.launch({
+               allowedUpdates: ['message'],
+            });
             this.loggerService.logInfo(`Bot ${botInfo.username} launched`);
          })
          .catch((err) => {
             this.loggerService.logError(err);
-            throw new Error(err.message);
          });
    }
-
-   async handleUpdate(event: APIGatewayProxyEvent) {
-      await this.bot.handleUpdate(JSON.parse(event.body!));
-   }
-
-   onCronTick = async () => {
-      try {
-         const users = await this.databaseService.findAllUsers();
-         for (const user of users) {
-            const weatherData = await this.weatherClient.getForecast(user.latitude, user.longitude);
-            if (isMinuteToRunCron(user.time, user.offset) && weatherData) {
-               const weatherString = generateWeatherString(weatherData);
-               await this.bot.telegram.sendMessage(user.chatId, weatherString);
-               this.loggerService.logInfo(`Chat ${user.chatId} received weather update.`);
-            }
-            if (!weatherData) {
-               await this.bot.telegram.sendMessage(user.chatId, BotResponse.WEATHER_FETCH_ERROR);
-            }
-         }
-      } catch (err) {
-         this.loggerService.logError('Cron job error!');
-      }
-   };
 }

@@ -68,7 +68,7 @@ Project stack:
 │   ├── scenes
 │   │   ├── scene.creator.ts
 │   │   └── subscribe.scene.ts
-│   ├── server.dev.ts
+│   ├── app.ts
 │   ├── server.ts
 │   ├── services
 │   │   ├── cron.service.ts

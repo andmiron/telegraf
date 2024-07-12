@@ -2,7 +2,6 @@ import { EnvironmentVariableKeys, LoggerOptions } from '../types/types';
 import { pino, TransportSingleOptions } from 'pino';
 import { cwd } from 'node:process';
 import path from 'node:path';
-import {User} from '../db/model.user.js';
 
 export class LoggerService {
    private readonly logger: pino.Logger;
